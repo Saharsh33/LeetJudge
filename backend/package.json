@@ -2,13 +2,14 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "directories": {
     "test": "tests"
   },
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
+    "worker": "node worker.js",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "keywords": [],
@@ -16,8 +17,10 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "bullmq": "^5.78.0",
     "dotenv": "^17.4.2",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "ioredis": "^5.11.1"
   },
   "devDependencies": {
     "jest": "^30.4.2",
