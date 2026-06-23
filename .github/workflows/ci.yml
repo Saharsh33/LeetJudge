@@ -12,6 +12,31 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: leetjudge
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     defaults:
       run:
         working-directory: ./backend
@@ -34,8 +59,14 @@ jobs:
       - name: Install dependencies
         run: npm ci || npm install
 
+      - name: Initialize Database
+        env:
+          PGPASSWORD: postgres
+        run: psql -h localhost -U postgres -d leetjudge -f ./init.sql
+
       - name: Run tests
         run: npm test
+
 
   docker-build:
     runs-on: ubuntu-latest
