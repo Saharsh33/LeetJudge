@@ -1,18 +1,18 @@
-// import { executeInSandbox } from '../sandbox/docker.js';
+// Worker handler - called by BullMQ when a submission job is picked up
+// Delegates actual judging to the judge service
+import { processSubmission as judgeProcess } from '../services/judge.service.js';
+import logger from '../utils/logger.js';
 
-export const processSubmission = async (submissionId) => {
-    console.log(`Picked up submission: ${submissionId}`);
-    // console.log(`Details: Lang: ${job.data.language}, User: ${job.data.userId}`);
+export const processSubmission = async (job) => {
+    const { submissionId } = job.data;
+    logger.info('Worker', `Picked up submission: ${submissionId}`);
 
     try {
-        // const executionResult = await executeInSandbox(job.data.code, job.data.language);
-        // Get Submission from DB, run it through the sandbox, and update the DB with results
-        // Simulating execution for now
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        return { verdict: 'Accepted', time: '45ms', memory: '12MB' };
-
+        await judgeProcess(submissionId);
+        logger.info('Worker', `Finished judging submission: ${submissionId}`);
+        return { submissionId, status: 'judged' };
     } catch (error) {
-        console.error(`Sandbox crash on submission ${submissionId}:`, error);
-        throw error; 
+        logger.error('Worker', `Sandbox crash on submission ${submissionId}`, error);
+        throw error;
     }
 };

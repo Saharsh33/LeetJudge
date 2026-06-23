@@ -1,4 +1,5 @@
-import db from './config/database.js';
+// Repository pattern - all data access for the accounts table lives here
+import { query } from '../config/database.js';
 
 export const create = async ({
     name,
@@ -7,9 +8,9 @@ export const create = async ({
     passwordHash,
     role
 }) => {
-    const result = await db.query(
+    const result = await query(
         `
-        INSERT INTO account
+        INSERT INTO accounts
         (name, username, email, password_hash, role)
         VALUES ($1, $2, $3, $4, $5)
         RETURNING *
@@ -21,10 +22,10 @@ export const create = async ({
 };
 
 export const findById = async (id) => {
-    const result = await db.query(
+    const result = await query(
         `
         SELECT *
-        FROM account
+        FROM accounts
         WHERE id = $1
         `,
         [id]
@@ -34,10 +35,10 @@ export const findById = async (id) => {
 };
 
 export const findByEmail = async (email) => {
-    const result = await db.query(
+    const result = await query(
         `
         SELECT *
-        FROM account
+        FROM accounts
         WHERE email = $1
         `,
         [email]
@@ -47,10 +48,10 @@ export const findByEmail = async (email) => {
 };
 
 export const findByUsername = async (username) => {
-    const result = await db.query(
+    const result = await query(
         `
         SELECT *
-        FROM account
+        FROM accounts
         WHERE username = $1
         `,
         [username]

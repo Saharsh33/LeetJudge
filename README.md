@@ -4,6 +4,7 @@ LeetJudge is an automated code execution and evaluation platform.
 
 ## Project Structure
 
+- `frontend/`: The Next.js frontend UI.
 - `backend/`: The Node.js Express API.
 - `.github/workflows/`: GitHub Actions CI/CD workflows.
 
@@ -20,9 +21,12 @@ LeetJudge is an automated code execution and evaluation platform.
    ```
 2. **Start the containers:**
    ```bash
-   docker-compose up --build
+   docker-compose up -d --build
    ```
-   *Note: This setup includes a volume mount and uses `nodemon`, so any changes you make locally will automatically restart the backend server inside the container!*
+   *Note: This starts the database, Redis cache, backend (port 3000), and frontend (port 3001). The backend uses `nodemon` and the frontend uses Next.js dev server, so local changes will automatically hot-reload!*
+
+   - **Frontend UI:** `http://localhost:3001`
+   - **Backend API:** `http://localhost:3000`
 
 ### Option 2: Running Locally (For Development)
 

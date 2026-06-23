@@ -10,18 +10,23 @@
     "start": "node app.js",
     "dev": "nodemon app.js",
     "worker": "node worker.js",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --runInBand --forceExit"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "bullmq": "^5.78.0",
+    "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.5.2",
     "ioredis": "^5.11.1",
-    "pg": "^8.21.0"
+    "jsonwebtoken": "^9.0.3",
+    "pg": "^8.21.0",
+    "rate-limit-redis": "^5.0.0"
   },
   "devDependencies": {
     "jest": "^30.4.2",

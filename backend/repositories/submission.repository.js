@@ -1,4 +1,5 @@
-import db from './config/database.js';
+// Repository pattern - all data access for the submissions table lives here
+import { query } from '../config/database.js';
 
 export const create = async ({
     userId,
@@ -6,7 +7,7 @@ export const create = async ({
     code,
     language
 }) => {
-    const result = await db.query(
+    const result = await query(
         `
         INSERT INTO submissions
         (
@@ -30,11 +31,12 @@ export const create = async ({
 };
 
 export const findById = async (submissionId) => {
-    const result = await db.query(
+    const result = await query(
         `
-        SELECT *
-        FROM submissions
-        WHERE id = $1
+        SELECT s.*, p.title as problem_title
+        FROM submissions s
+        LEFT JOIN problems p ON s.problem_id = p.id
+        WHERE s.id = $1
         `,
         [submissionId]
     );
@@ -43,12 +45,13 @@ export const findById = async (submissionId) => {
 };
 
 export const findByUserId = async (userId) => {
-    const result = await db.query(
+    const result = await query(
         `
-        SELECT *
-        FROM submissions
-        WHERE user_id = $1
-        ORDER BY timestamp DESC
+        SELECT s.*, p.title as problem_title
+        FROM submissions s
+        LEFT JOIN problems p ON s.problem_id = p.id
+        WHERE s.user_id = $1
+        ORDER BY s.timestamp DESC
         `,
         [userId]
     );
@@ -60,7 +63,7 @@ export const findByUserAndProblem = async (
     userId,
     problemId
 ) => {
-    const result = await db.query(
+    const result = await query(
         `
         SELECT *
         FROM submissions
@@ -86,7 +89,7 @@ export const updateVerdict = async (
         actualOutput
     }
 ) => {
-    const result = await db.query(
+    const result = await query(
         `
         UPDATE submissions
         SET

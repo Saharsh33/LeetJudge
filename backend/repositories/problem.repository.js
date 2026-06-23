@@ -1,4 +1,5 @@
-import db from './config/database.js';
+// Repository pattern - all data access for the problems table lives here
+import { query } from '../config/database.js';
 
 export const create = async ({
     title,
@@ -6,10 +7,10 @@ export const create = async ({
     tags,
     difficulty,
     createdBy,
-    timeLimitMs,
-    memoryLimitKb
+    timelimit,
+    memorylimit
 }) => {
-    const result = await db.query(
+    const result = await query(
         `
         INSERT INTO problems
         (
@@ -18,8 +19,8 @@ export const create = async ({
             tags,
             difficulty,
             created_by,
-            time_limit_ms,
-            memory_limit_kb
+            timelimit,
+            memorylimit
         )
         VALUES ($1, $2, $3, $4, $5, $6, $7)
         RETURNING *
@@ -30,8 +31,8 @@ export const create = async ({
             tags,
             difficulty,
             createdBy,
-            timeLimitMs,
-            memoryLimitKb
+            timelimit,
+            memorylimit
         ]
     );
 
@@ -39,7 +40,7 @@ export const create = async ({
 };
 
 export const findById = async (problemId) => {
-    const result = await db.query(
+    const result = await query(
         `
         SELECT *
         FROM problems
@@ -52,12 +53,16 @@ export const findById = async (problemId) => {
 };
 
 export const findAll = async (limit, offset) => {
-    const result = await db.query(
+    const result = await query(
         `
         SELECT
             id,
             title,
-            difficulty
+            difficulty,
+            tags,
+            timelimit,
+            memorylimit,
+            created_at
         FROM problems
         ORDER BY created_at DESC
         LIMIT $1 OFFSET $2

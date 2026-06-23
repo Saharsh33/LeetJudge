@@ -1,8 +1,17 @@
 import express from 'express';
-import { submitCode, getSubmissionById, getMySubmissions, getUserSubmissionsForProblem} from '../controllers/submission.controller.js';
+import { submitCode, getSubmissionById, getMySubmissions, getUserSubmissionsForProblem } from '../controllers/submission.controller.js';
+import { authenticate } from '../middleware/auth.middleware.js';
+import { validateSubmission } from '../validators/submission.validator.js';
+import { strictLimiter } from '../middleware/rateLimit.middleware.js';
+
 const router = express.Router();
-router.post("/", submitCode);
-router.get("/mySubmissions", getMySubmissions)
+
+// All submission routes require authentication
+router.use(authenticate);
+
+router.post("/", strictLimiter, validateSubmission, submitCode);
+router.get("/mySubmissions", getMySubmissions);
 router.get("/:submissionsId", getSubmissionById);
 router.get("/problem/:problemId/user/:userId", getUserSubmissionsForProblem);
+
 export default router;

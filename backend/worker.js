@@ -1,9 +1,11 @@
+import 'dotenv/config';
 import { Worker } from 'bullmq';
-import { redisConnection } from './config/redis.js';
+import redisConnection from './config/redis.js';
 import { processSubmission } from './queue/submission.worker.js';
+import logger from './utils/logger.js';
 
 const submissionWorker = new Worker(
-  'judge_queue', 
+  'judge_queue',
   processSubmission,
   {
     connection: redisConnection,
@@ -13,12 +15,12 @@ const submissionWorker = new Worker(
   }
 );
 
-submissionWorker.on('completed', (jobId, result) => {
-  console.log(`Job ${jobId} completed. Verdict: ${result.verdict}`);
+submissionWorker.on('completed', (job, result) => {
+  logger.info('Worker', `Job ${job.id} completed`, result);
 });
 
-submissionWorker.on('failed', (jobId, err) => {
-  console.log(`Job ${jobId} failed permanently. Error: ${err.message}`);
+submissionWorker.on('failed', (job, err) => {
+  logger.error('Worker', `Job ${job.id} failed permanently: ${err.message}`);
 });
 
-console.log('Submission Worker is active and listening to Redis...');
+logger.info('Worker', 'Submission Worker is active and listening to Redis...');

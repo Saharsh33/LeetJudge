@@ -10,6 +10,8 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install
 
+# Install compilers and runtimes for the supported languages
+RUN apk add --no-cache python3 g++ openjdk11
 # Copy the rest of the backend source code
 COPY . .
 

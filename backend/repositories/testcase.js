@@ -1,4 +1,5 @@
-import db from './config/database.js';
+// Repository pattern - batch insert for test cases, plus lookup by problem
+import { query } from '../config/database.js';
 
 export const createMany = async (problemId, testCases) => {
     const values = [];
@@ -18,7 +19,7 @@ export const createMany = async (problemId, testCases) => {
         );
     });
 
-    const result = await db.query(
+    const result = await query(
         `
         INSERT INTO test_cases
         (
@@ -37,7 +38,7 @@ export const createMany = async (problemId, testCases) => {
 };
 
 export const findByProblemId = async (problemId) => {
-    const result = await db.query(
+    const result = await query(
         `
         SELECT *
         FROM test_cases
