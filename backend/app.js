@@ -9,8 +9,10 @@ import  redisConnection  from './config/redis.js';
 import authRoutes from './routes/auth.routes.js';
 import problemRoutes from './routes/problem.routes.js';
 import submissionRoutes from './routes/submission.routes.js';
+import otpRoutes from './routes/otp.routes.js';
 import { apiLimiter } from './middleware/rateLimit.middleware.js';
 const app = express();
+app.set('trust proxy', 1); // Extract IP from X-Forwarded-For to prevent blocking all docker traffic as one IP
 const PORT = process.env.PORT || 3000;
 import cors from 'cors';
 
@@ -35,6 +37,7 @@ app.use('/api', apiLimiter);
 app.use('/api/auth', authRoutes);
 app.use('/api/problems', problemRoutes);
 app.use('/api/submissions', submissionRoutes);
+app.use('/api/otp', otpRoutes);
 // Basic Route
 app.get('/health', (req, res) => {
     res.status(200).json({ status: 'ok', message: 'LeetJudge API is running' });

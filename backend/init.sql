@@ -71,3 +71,14 @@ CREATE TABLE IF NOT EXISTS submissions (
 -- Indexes for fast lookup
 CREATE INDEX IF NOT EXISTS idx_submissions_user_id ON submissions(user_id);
 CREATE INDEX IF NOT EXISTS idx_submissions_problem_id ON submissions(problem_id);
+
+-- OTP Table
+CREATE TABLE IF NOT EXISTS otps (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    email VARCHAR(255) NOT NULL,
+    otp VARCHAR(10) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    expires_at TIMESTAMP NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_otps_email ON otps(email);

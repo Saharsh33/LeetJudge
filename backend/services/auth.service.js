@@ -3,6 +3,9 @@
 import * as accountRepo from '../repositories/account.repository.js';
 import { hashPassword, comparePassword } from '../utils/password.util.js';
 import { generateToken } from '../utils/jwt.util.js';
+import { sendWelcomeEmail, sendLoginAlertEmail } from './email.service.js';
+
+import { getLocationFromIP } from '../utils/geo.util.js';
 
 export const signupService = async ({ name, username, email, password }) => {
     // Check if email is already taken
@@ -29,10 +32,16 @@ export const signupService = async ({ name, username, email, password }) => {
 
     // Strip the password hash before returning
     delete newUser.password_hash;
+    
+    // Send welcome email asynchronously
+    sendWelcomeEmail(newUser.email, newUser.name).catch(err => {
+        console.error('Failed to send welcome email:', err.message);
+    });
+    
     return newUser;
 };
 
-export const loginService = async (email, password) => {
+export const loginService = async (email, password, ip) => {
     const user = await accountRepo.findByEmail(email);
 
     if (!user) {
@@ -48,6 +57,17 @@ export const loginService = async (email, password) => {
 
     // Strip the password hash before returning
     delete user.password_hash;
+    
+    // Send login alert email asynchronously
+    const time = new Date().toLocaleString();
+    
+    // Attempt geolocation
+    getLocationFromIP(ip).then(location => {
+        const ipDisplay = ip ? `${ip} (${location})` : `Unknown IP (${location})`;
+        sendLoginAlertEmail(user.email, ipDisplay, time).catch(err => {
+            console.error('Failed to send login alert email:', err.message);
+        });
+    });
 
     return { user, token };
 };

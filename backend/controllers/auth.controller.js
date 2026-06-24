@@ -22,7 +22,8 @@ export const login = async (req, res) => {
             return res.status(400).json({ error: "Email and password are required" });
         }
 
-        const { user, token } = await loginService(email, password);
+        // Pass req.ip for geolocation mapping in the service
+        const { user, token } = await loginService(email, password, req.ip);
         res.status(200).json({ message: "Login successful", user, token });
     } catch (error) {
         res.status(401).json({ error: error.message });

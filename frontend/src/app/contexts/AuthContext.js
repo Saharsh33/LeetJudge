@@ -47,13 +47,23 @@ export function AuthProvider({ children }) {
     setUser(loginRes.data.user || user);
   };
 
+  const sendOtp = async (email) => {
+    const res = await api.post('/otp/send', { email });
+    return res.data;
+  };
+
+  const verifyOtp = async (email, otp) => {
+    const res = await api.post('/otp/verify', { email, otp });
+    return res.data;
+  };
+
   const logout = () => {
     localStorage.removeItem('token');
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, signup, logout, sendOtp, verifyOtp, loading }}>
       {children}
     </AuthContext.Provider>
   );

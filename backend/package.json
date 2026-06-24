@@ -10,7 +10,7 @@
     "start": "node app.js",
     "dev": "nodemon app.js",
     "worker": "node worker.js",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest --runInBand --forceExit"
+    "test": "NODE_OPTIONS=--experimental-vm-modules RESEND_API_KEY=re_your_api_key_here jest --runInBand --forceExit"
   },
   "keywords": [],
   "author": "",
@@ -26,7 +26,8 @@
     "ioredis": "^5.11.1",
     "jsonwebtoken": "^9.0.3",
     "pg": "^8.21.0",
-    "rate-limit-redis": "^5.0.0"
+    "rate-limit-redis": "^5.0.0",
+    "resend": "^6.14.0"
   },
   "devDependencies": {
     "jest": "^30.4.2",

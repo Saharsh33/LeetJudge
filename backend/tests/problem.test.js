@@ -42,7 +42,7 @@ describe('Problem Endpoints', () => {
                 tags: ['Array', 'Hash Table'],
                 difficulty: 'EASY',
                 timelimit: 1000,
-                memorylimit: 256
+                memorylimit: 262144
             });
 
         expect(res.statusCode).toEqual(201);
