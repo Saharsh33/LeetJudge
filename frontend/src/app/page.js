@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from './contexts/AuthContext';
 import Link from 'next/link';
 import Badge from './components/Badge';
+import DifficultyBadge from './components/DifficultyBadge';
 
 export default function Home() {
   const [problems, setProblems] = useState([]);
@@ -40,12 +41,7 @@ export default function Home() {
       <span style={{ fontWeight: '500' }}>{row.title}</span>
     )},
     { header: 'Difficulty', accessor: 'difficulty', render: (row) => (
-        <Badge 
-          color={row.difficulty === 'EASY' ? 'var(--status-accepted)' : row.difficulty === 'MEDIUM' ? 'var(--status-tle)' : 'var(--status-wrong)'}
-          border={row.difficulty === 'EASY' ? 'var(--status-accepted)' : row.difficulty === 'MEDIUM' ? 'var(--status-tle)' : 'var(--status-wrong)'}
-        >
-          {row.difficulty}
-        </Badge>
+        <DifficultyBadge difficulty={row.difficulty} />
       ) 
     },
     { header: 'Tags', accessor: 'tags', render: (row) => (

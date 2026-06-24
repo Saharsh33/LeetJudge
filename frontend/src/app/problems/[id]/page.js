@@ -7,6 +7,7 @@ import MarkdownRenderer from '../../components/MarkdownRenderer';
 import CodeEditor from '../../components/CodeEditor';
 import Button from '../../components/Button';
 import Badge from '../../components/Badge';
+import DifficultyBadge from '../../components/DifficultyBadge';
 import { useAuth } from '../../contexts/AuthContext';
 import { toast } from 'react-hot-toast';
 
@@ -112,7 +113,7 @@ export default function ProblemWorkspace() {
       case 'ACCEPTED': return { color: 'var(--status-accepted)', backgroundColor: 'var(--status-accepted-bg)', padding: '0.2rem 0.6rem', borderRadius: 'var(--radius)', fontWeight: '600', fontSize: '0.875rem' };
       case 'WRONG_ANSWER': return { color: 'var(--status-wrong)', backgroundColor: 'var(--status-wrong-bg)', padding: '0.2rem 0.6rem', borderRadius: 'var(--radius)', fontWeight: '600', fontSize: '0.875rem' };
       case 'TIME_LIMIT_EXCEEDED': return { color: 'var(--status-tle)', backgroundColor: 'var(--status-tle-bg)', padding: '0.2rem 0.6rem', borderRadius: 'var(--radius)', fontWeight: '600', fontSize: '0.875rem' };
-      case 'PENDING': case 'COMPILING': case 'RUNNING': return { color: 'var(--text-secondary)', backgroundColor: '#F1F5F9', padding: '0.2rem 0.6rem', borderRadius: 'var(--radius)', fontWeight: '600', fontSize: '0.875rem' };
+      case 'PENDING': case 'COMPILING': case 'RUNNING': return { color: 'var(--text-secondary)', backgroundColor: 'var(--badge-bg)', padding: '0.2rem 0.6rem', borderRadius: 'var(--radius)', fontWeight: '600', fontSize: '0.875rem' };
       default: return { color: 'var(--status-wrong)', backgroundColor: 'var(--status-wrong-bg)', padding: '0.2rem 0.6rem', borderRadius: 'var(--radius)', fontWeight: '600', fontSize: '0.875rem' };
     }
   };
@@ -132,20 +133,14 @@ export default function ProblemWorkspace() {
         <h1 style={{ fontSize: '1.875rem', fontWeight: '700', letterSpacing: '-0.02em', marginBottom: '0.75rem', color: 'var(--text-main)' }}>{problem.title}</h1>
         <div style={{ marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-            <Badge 
-              color={problem.difficulty === 'EASY' ? 'var(--status-accepted)' : problem.difficulty === 'MEDIUM' ? 'var(--status-tle)' : 'var(--status-wrong)'}
-              bg={problem.difficulty === 'EASY' ? 'var(--status-accepted-bg)' : problem.difficulty === 'MEDIUM' ? 'var(--status-tle-bg)' : 'var(--status-wrong-bg)'}
-              border="transparent"
-            >
-              {problem.difficulty}
-            </Badge>
+            <DifficultyBadge difficulty={problem.difficulty} />
             <span style={{ fontSize: '0.85rem', fontWeight: '500', color: 'var(--text-secondary)' }}>Time Limit: {problem.timelimit} ms</span>
             <span style={{ fontSize: '0.85rem', fontWeight: '500', color: 'var(--text-secondary)' }}>Memory Limit: {Math.round(problem.memorylimit / 1024)} MB</span>
           </div>
           {problem.tags && problem.tags.length > 0 && (
             <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.25rem' }}>
               {problem.tags.map(tag => (
-                <Badge key={tag} bg="#F1F5F9" border="#E2E8F0" color="var(--text-secondary)">{tag}</Badge>
+                <Badge key={tag} bg="var(--badge-bg)" border="var(--border-color)" color="var(--text-secondary)">{tag}</Badge>
               ))}
             </div>
           )}
@@ -174,7 +169,12 @@ export default function ProblemWorkspace() {
 
         {/* Code Editor */}
         <div style={{ flex: 1, overflow: 'hidden' }}>
-          <CodeEditor language={LANGUAGES.find(l => l.id === lang)?.monacoId || 'python'} value={code} onChange={(val) => setCode(val)} />
+          <CodeEditor 
+            language={LANGUAGES.find(l => l.id === lang)?.monacoId || 'python'} 
+            value={code} 
+            onChange={(val) => setCode(val)} 
+            onSubmit={handleSubmit}
+          />
         </div>
 
         {/* Console / Result Panel */}
