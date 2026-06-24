@@ -109,11 +109,11 @@ export default function ProblemWorkspace() {
 
   const getVerdictStyle = (verdict) => {
     switch (verdict) {
-      case 'ACCEPTED': return { color: 'var(--status-accepted)', fontWeight: '600' };
-      case 'WRONG_ANSWER': return { color: 'var(--status-wrong)', fontWeight: '600' };
-      case 'TIME_LIMIT_EXCEEDED': return { color: 'var(--status-tle)', fontWeight: '600' };
-      case 'PENDING': case 'COMPILING': case 'RUNNING': return { color: 'var(--text-secondary)', fontWeight: '500' };
-      default: return { color: 'var(--status-wrong)', fontWeight: '600' };
+      case 'ACCEPTED': return { color: 'var(--status-accepted)', backgroundColor: 'var(--status-accepted-bg)', padding: '0.2rem 0.6rem', borderRadius: 'var(--radius)', fontWeight: '600', fontSize: '0.875rem' };
+      case 'WRONG_ANSWER': return { color: 'var(--status-wrong)', backgroundColor: 'var(--status-wrong-bg)', padding: '0.2rem 0.6rem', borderRadius: 'var(--radius)', fontWeight: '600', fontSize: '0.875rem' };
+      case 'TIME_LIMIT_EXCEEDED': return { color: 'var(--status-tle)', backgroundColor: 'var(--status-tle-bg)', padding: '0.2rem 0.6rem', borderRadius: 'var(--radius)', fontWeight: '600', fontSize: '0.875rem' };
+      case 'PENDING': case 'COMPILING': case 'RUNNING': return { color: 'var(--text-secondary)', backgroundColor: '#F1F5F9', padding: '0.2rem 0.6rem', borderRadius: 'var(--radius)', fontWeight: '600', fontSize: '0.875rem' };
+      default: return { color: 'var(--status-wrong)', backgroundColor: 'var(--status-wrong-bg)', padding: '0.2rem 0.6rem', borderRadius: 'var(--radius)', fontWeight: '600', fontSize: '0.875rem' };
     }
   };
 
@@ -129,22 +129,23 @@ export default function ProblemWorkspace() {
     <div style={{ display: 'flex', height: 'calc(100vh - 60px)' }}>
       {/* Left Pane - Description */}
       <div style={{ flex: 1, padding: '1.5rem', overflowY: 'auto', borderRight: '1px solid var(--border-color)' }}>
-        <h1 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>{problem.title}</h1>
+        <h1 style={{ fontSize: '1.875rem', fontWeight: '700', letterSpacing: '-0.02em', marginBottom: '0.75rem', color: 'var(--text-main)' }}>{problem.title}</h1>
         <div style={{ marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
             <Badge 
               color={problem.difficulty === 'EASY' ? 'var(--status-accepted)' : problem.difficulty === 'MEDIUM' ? 'var(--status-tle)' : 'var(--status-wrong)'}
-              border={problem.difficulty === 'EASY' ? 'var(--status-accepted)' : problem.difficulty === 'MEDIUM' ? 'var(--status-tle)' : 'var(--status-wrong)'}
+              bg={problem.difficulty === 'EASY' ? 'var(--status-accepted-bg)' : problem.difficulty === 'MEDIUM' ? 'var(--status-tle-bg)' : 'var(--status-wrong-bg)'}
+              border="transparent"
             >
               {problem.difficulty}
             </Badge>
-            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Time Limit: {problem.timelimit} ms</span>
-            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Memory Limit: {Math.round(problem.memorylimit / 1024)} MB</span>
+            <span style={{ fontSize: '0.85rem', fontWeight: '500', color: 'var(--text-secondary)' }}>Time Limit: {problem.timelimit} ms</span>
+            <span style={{ fontSize: '0.85rem', fontWeight: '500', color: 'var(--text-secondary)' }}>Memory Limit: {Math.round(problem.memorylimit / 1024)} MB</span>
           </div>
           {problem.tags && problem.tags.length > 0 && (
-            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.25rem' }}>
               {problem.tags.map(tag => (
-                <Badge key={tag}>{tag}</Badge>
+                <Badge key={tag} bg="#F1F5F9" border="#E2E8F0" color="var(--text-secondary)">{tag}</Badge>
               ))}
             </div>
           )}
@@ -156,7 +157,7 @@ export default function ProblemWorkspace() {
       {/* Right Pane - Editor & Console */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         {/* Editor Toolbar */}
-        <div style={{ padding: '0.5rem 1rem', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'var(--surface)' }}>
+        <div style={{ padding: '0.75rem 1rem', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'var(--surface)', boxShadow: '0 1px 2px rgba(0,0,0,0.02)' }}>
           <select 
             value={lang} 
             onChange={(e) => handleLangChange(e.target.value)}

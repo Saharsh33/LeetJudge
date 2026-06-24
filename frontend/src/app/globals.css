@@ -8,8 +8,11 @@
   --border-color: #CBD5E1;
   
   --status-accepted: #15803D;
+  --status-accepted-bg: #DCFCE7;
   --status-wrong: #B91C1C;
+  --status-wrong-bg: #FEE2E2;
   --status-tle: #CA8A04;
+  --status-tle-bg: #FEF08A;
 
   /* Typography */
   --font-ui: 'Inter', sans-serif;
