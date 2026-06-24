@@ -1,22 +1,10 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useRef } from "react";
 import Editor from "@monaco-editor/react";
 
 export default function CodeEditor({ language, value, onChange, readOnly = false, onSubmit }) {
-  const [theme, setTheme] = useState("light");
   const editorRef = useRef(null);
-
-  useEffect(() => {
-    if (typeof window !== "undefined" && window.matchMedia) {
-      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        setTheme("vs-dark");
-      }
-      const listener = (e) => setTheme(e.matches ? "vs-dark" : "light");
-      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', listener);
-      return () => window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', listener);
-    }
-  }, []);
 
   const handleEditorMount = (editor, monaco) => {
     editorRef.current = editor;
@@ -33,7 +21,7 @@ export default function CodeEditor({ language, value, onChange, readOnly = false
       height="100%"
       language={language}
       value={value}
-      theme={theme}
+      theme="light"
       onChange={onChange}
       onMount={handleEditorMount}
       options={{

@@ -35,7 +35,16 @@ export default function ProblemWorkspace() {
   const [submitting, setSubmitting] = useState(false);
   const [submissionResult, setSubmissionResult] = useState(null);
   const [pollInterval, setPollInterval] = useState(null);
+  const [shortcut, setShortcut] = useState('Ctrl Enter');
   const { user } = useAuth();
+
+  useEffect(() => {
+    if (typeof navigator !== 'undefined') {
+      if (navigator.platform.toUpperCase().indexOf('MAC') >= 0 || navigator.userAgent.toUpperCase().indexOf('MAC') >= 0) {
+        setShortcut('⌘ Enter');
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const fetchProblem = async () => {
@@ -162,8 +171,13 @@ export default function ProblemWorkspace() {
               <option key={l.id} value={l.id}>{l.name}</option>
             ))}
           </select>
-          <Button variant="primary" style={{ padding: '0.25rem 1rem' }} onClick={handleSubmit} disabled={submitting}>
-            {submitting ? 'Submitting...' : 'Submit'}
+          <Button variant="primary" style={{ padding: '0.4rem 1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }} onClick={handleSubmit} disabled={submitting}>
+            <span>{submitting ? 'Submitting...' : 'Submit'}</span>
+            {!submitting && (
+              <span style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.8)', fontWeight: '400', backgroundColor: 'rgba(0, 0, 0, 0.15)', padding: '0.1rem 0.3rem', borderRadius: '4px' }}>
+                {shortcut}
+              </span>
+            )}
           </Button>
         </div>
 

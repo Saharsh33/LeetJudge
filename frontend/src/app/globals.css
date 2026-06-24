@@ -151,22 +151,3 @@ input, textarea, select {
     display: none !important;
   }
 }
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg-color: #0F172A;
-    --surface: #1E293B;
-    --text-main: #F8FAFC;
-    --text-secondary: #94A3B8;
-    --border-color: #334155;
-    
-    --status-accepted-bg: rgba(21, 128, 61, 0.25);
-    --status-wrong-bg: rgba(185, 28, 28, 0.25);
-    --status-tle-bg: rgba(202, 138, 4, 0.25);
-    --status-accepted: #4ADE80;
-    --status-wrong: #F87171;
-    --status-tle: #FACC15;
-    
-    --badge-bg: #334155;
-  }
-}
