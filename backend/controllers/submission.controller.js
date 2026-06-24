@@ -15,7 +15,8 @@ export const submitCode = async (req, res) => {
 
         res.status(201).json({ message: "Submission received", submission });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error(error);
+        res.status(500).json({ error: "An internal server error occurred" });
     }
 };
 
@@ -35,7 +36,8 @@ export const getSubmissionById = async (req, res) => {
 
         res.status(200).json({ submission });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error(error);
+        res.status(500).json({ error: "An internal server error occurred" });
     }
 };
 
@@ -45,7 +47,8 @@ export const getMySubmissions = async (req, res) => {
         const submissions = await submissionService.getMySubmissionsService(userId);
         res.status(200).json({ submissions });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error(error);
+        res.status(500).json({ error: "An internal server error occurred" });
     }
 };
 
@@ -61,6 +64,7 @@ export const getUserSubmissionsForProblem = async (req, res) => {
         const submissions = await submissionService.getUserSubmissionsForProblemService(userId, problemId);
         res.status(200).json({ submissions });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error(error);
+        res.status(500).json({ error: "An internal server error occurred" });
     }
 };

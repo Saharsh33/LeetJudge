@@ -5,7 +5,8 @@ export const getProblems = async (req, res) => {
         const problems = await problemService.getAllProblems();
         res.status(200).json({ problems });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error(error);
+        res.status(500).json({ error: "An internal server error occurred" });
     }
 };
 
@@ -39,7 +40,8 @@ export const createProblem = async (req, res) => {
 
         res.status(201).json({ message: "Problem created successfully", problem: newProblem });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error(error);
+        res.status(500).json({ error: "An internal server error occurred" });
     }
 };
 
@@ -55,7 +57,8 @@ export const addTestCases = async (req, res) => {
         const addedTestCases = await problemService.addTestCasesService(problemId, testCases);
         res.status(201).json({ message: "Test cases added successfully", testCases: addedTestCases });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error(error);
+        res.status(500).json({ error: "An internal server error occurred" });
     }
 };
 
@@ -70,6 +73,7 @@ export const getProblemById = async (req, res) => {
 
         res.status(200).json({ problem });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error(error);
+        res.status(500).json({ error: "An internal server error occurred" });
     }
 };

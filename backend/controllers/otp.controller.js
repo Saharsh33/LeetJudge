@@ -6,7 +6,8 @@ export const sendOtp = async (req, res) => {
         await otpService.sendOtp(email);
         res.status(200).json({ message: "OTP sent successfully" });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error(error);
+        res.status(500).json({ error: "An internal server error occurred" });
     }
 };
 
