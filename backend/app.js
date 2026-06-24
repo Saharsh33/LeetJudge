@@ -43,6 +43,10 @@ app.get('/health', (req, res) => {
     res.status(200).json({ status: 'ok', message: 'LeetJudge API is running' });
 });
 
+// Start the background worker within the same process
+// This saves you from needing to deploy a separate Background Worker service on Render!
+import './worker.js';
+
 // Bootstrap application
 const isMain = process.argv[1] === fileURLToPath(import.meta.url);
 if (isMain) {
