@@ -83,3 +83,13 @@ CREATE TABLE IF NOT EXISTS otps (
 );
 
 CREATE INDEX IF NOT EXISTS idx_otps_email ON otps(email);
+
+-- Problem Editors Table (Many-to-Many mapping for edit access)
+CREATE TABLE IF NOT EXISTS problem_editors (
+    problem_id UUID REFERENCES problems(id) ON DELETE CASCADE,
+    user_id UUID REFERENCES accounts(id) ON DELETE CASCADE,
+    granted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (problem_id, user_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_problem_editors_problem_id ON problem_editors(problem_id);
