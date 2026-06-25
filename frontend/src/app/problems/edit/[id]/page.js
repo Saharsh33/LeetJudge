@@ -23,6 +23,8 @@ export default function EditProblem({ params }) {
   
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [editorEmail, setEditorEmail] = useState('');
+  const [addingEditor, setAddingEditor] = useState(false);
 
   useEffect(() => {
     const fetchProblem = async () => {
@@ -77,6 +79,22 @@ export default function EditProblem({ params }) {
       setError(err.response?.data?.error || 'Failed to update problem');
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleAddEditor = async (e) => {
+    e.preventDefault();
+    if (!editorEmail) return;
+    setAddingEditor(true);
+    const toastId = toast.loading('Adding editor...');
+    try {
+      await api.post(`/problems/${id}/editors`, { email: editorEmail });
+      toast.success(`Granted edit access to ${editorEmail}`, { id: toastId });
+      setEditorEmail('');
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Failed to add editor', { id: toastId });
+    } finally {
+      setAddingEditor(false);
     }
   };
 
@@ -150,7 +168,7 @@ export default function EditProblem({ params }) {
 
         <Input label="Tags (comma-separated)" id="tags" type="text" value={tags} onChange={(e) => setTags(e.target.value)} />
 
-        <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
+        <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '2rem', marginBottom: '2rem' }}>
           <Button type="submit" variant="primary" style={{ flex: 1 }} disabled={submitting}>
             {submitting ? 'Updating...' : 'Save Changes'}
           </Button>
@@ -159,6 +177,28 @@ export default function EditProblem({ params }) {
           </Button>
         </div>
       </form>
+
+      <div style={{ backgroundColor: 'var(--surface)', padding: '1.5rem', borderRadius: 'var(--radius)', border: '1px solid var(--border-color)' }}>
+        <h2 style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>Manage Access</h2>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '1.5rem' }}>Grant other Problem Setters or Admins the ability to edit this problem.</p>
+        
+        <form onSubmit={handleAddEditor} style={{ display: 'flex', gap: '1rem', alignItems: 'flex-end' }}>
+          <div style={{ flex: 1 }}>
+            <Input 
+              label="User Email" 
+              id="editorEmail" 
+              type="email" 
+              placeholder="colleague@example.com" 
+              value={editorEmail} 
+              onChange={(e) => setEditorEmail(e.target.value)} 
+              disabled={addingEditor}
+            />
+          </div>
+          <Button type="submit" variant="secondary" disabled={addingEditor || !editorEmail} style={{ height: '42px', marginBottom: '1rem' }}>
+            {addingEditor ? 'Adding...' : 'Grant Access'}
+          </Button>
+        </form>
+      </div>
     </div>
   );
 }

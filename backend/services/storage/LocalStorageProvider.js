@@ -21,8 +21,8 @@ export class LocalStorageProvider extends StorageProvider {
 
         await fs.promises.writeFile(filePath, file.buffer);
 
-        // This assumes express is serving the /uploads directory statically
-        const url = `${this.baseUrl}/uploads/${fileName}`;
+        // Return a relative URL. The frontend will prepend the backend domain.
+        const url = `/uploads/${fileName}`;
         return {
             url,
             fileId: { path: filePath }

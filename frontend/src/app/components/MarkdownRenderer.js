@@ -10,9 +10,12 @@ export default function MarkdownRenderer({ content }) {
         remarkPlugins={[remarkGfm, remarkMath]}
         rehypePlugins={[rehypeKatex]}
         components={{
-          img: ({node, ...props}) => (
-            <img style={{ maxWidth: '100%', height: 'auto', borderRadius: '4px' }} {...props} />
-          ),
+          img: ({node, src, ...props}) => {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+            const baseUrl = apiUrl.replace(/\/api$/, '');
+            const finalSrc = src?.startsWith('/uploads') ? `${baseUrl}${src}` : src;
+            return <img src={finalSrc} style={{ maxWidth: '100%', height: 'auto', borderRadius: '4px' }} {...props} />;
+          },
           table: ({node, ...props}) => (
             <div style={{ overflowX: 'auto', marginBottom: '1rem' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem' }} {...props} />

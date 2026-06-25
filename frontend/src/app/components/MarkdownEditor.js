@@ -245,7 +245,12 @@ export default function MarkdownEditor({ value, onChange, placeholder = "Write y
         }}>
           <h4 style={{ margin: '0 0 1rem 0', fontSize: '1rem' }}>Session Uploads</h4>
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-            {uploadedImages.map((img, idx) => (
+            {uploadedImages.map((img, idx) => {
+                const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+                const baseUrl = apiUrl.replace(/\/api$/, '');
+                const finalSrc = img.url?.startsWith('/uploads') ? `${baseUrl}${img.url}` : img.url;
+                
+                return (
               <div key={idx} style={{
                 position: 'relative',
                 width: '100px',
@@ -259,7 +264,7 @@ export default function MarkdownEditor({ value, onChange, placeholder = "Write y
                 justifyContent: 'center',
                 group: 'true'
               }}>
-                <img src={img.url} alt={img.altText} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+                <img src={finalSrc} alt={img.altText} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
                 <button
                   type="button"
                   onClick={() => handleDeleteImage(img)}
@@ -287,7 +292,8 @@ export default function MarkdownEditor({ value, onChange, placeholder = "Write y
                   </svg>
                 </button>
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}

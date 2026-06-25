@@ -1,6 +1,7 @@
 import * as problemService from '../services/problem.service.js';
 import { uploadImageService, deleteImageService } from '../services/storage.service.js';
 import { clearCache } from '../middleware/cache.middleware.js';
+import { findByEmail } from '../repositories/account.repository.js';
 
 export const getProblems = async (req, res) => {
     try {
@@ -155,12 +156,12 @@ export const deleteProblem = async (req, res) => {
 export const addEditor = async (req, res) => {
     try {
         const { problemId } = req.params;
-        const { editorId } = req.body;
+        const { email } = req.body;
         const userId = req.user.id;
         const userRole = req.user.role;
 
-        if (!editorId) {
-             return res.status(400).json({ error: "Editor ID is required" });
+        if (!email) {
+             return res.status(400).json({ error: "Editor email is required" });
         }
 
         // Only creator or admin can add editors
@@ -170,8 +171,17 @@ export const addEditor = async (req, res) => {
                 return res.status(403).json({ error: "Forbidden: Only the creator or an admin can add editors" });
             }
         }
+        
+        const editorUser = await findByEmail(email);
+        if (!editorUser) {
+            return res.status(404).json({ error: "User with this email not found" });
+        }
+        
+        if (editorUser.role !== 'PROBLEM_SETTER' && editorUser.role !== 'ADMIN') {
+            return res.status(400).json({ error: "User must be a Problem Setter or Admin to be added as an editor" });
+        }
 
-        await problemService.addProblemEditorService(problemId, editorId);
+        await problemService.addProblemEditorService(problemId, editorUser.id);
         res.status(200).json({ message: "Editor added successfully" });
     } catch (error) {
         console.error(error);
