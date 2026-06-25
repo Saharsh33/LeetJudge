@@ -8,7 +8,9 @@ export const create = async ({
     difficulty,
     createdBy,
     timelimit,
-    memorylimit
+    memorylimit,
+    editorial,
+    isEditorialVisible = true
 }) => {
     const result = await query(
         `
@@ -20,9 +22,11 @@ export const create = async ({
             difficulty,
             created_by,
             timelimit,
-            memorylimit
+            memorylimit,
+            editorial,
+            is_editorial_visible
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         RETURNING *
         `,
         [
@@ -32,7 +36,9 @@ export const create = async ({
             difficulty,
             createdBy,
             timelimit,
-            memorylimit
+            memorylimit,
+            editorial,
+            isEditorialVisible
         ]
     );
 
@@ -62,6 +68,7 @@ export const findAll = async (limit, offset) => {
             tags,
             timelimit,
             memorylimit,
+            is_editorial_visible,
             created_at
         FROM problems
         ORDER BY created_at DESC
@@ -73,15 +80,15 @@ export const findAll = async (limit, offset) => {
     return result.rows;
 };
 
-export const update = async (problemId, { title, description, tags, difficulty, timelimit, memorylimit }) => {
+export const update = async (problemId, { title, description, tags, difficulty, timelimit, memorylimit, editorial, isEditorialVisible }) => {
     const result = await query(
         `
         UPDATE problems
-        SET title = $1, description = $2, tags = $3, difficulty = $4, timelimit = $5, memorylimit = $6
-        WHERE id = $7
+        SET title = $1, description = $2, tags = $3, difficulty = $4, timelimit = $5, memorylimit = $6, editorial = $7, is_editorial_visible = $8
+        WHERE id = $9
         RETURNING *
         `,
-        [title, description, tags, difficulty, timelimit, memorylimit, problemId]
+        [title, description, tags, difficulty, timelimit, memorylimit, editorial, isEditorialVisible, problemId]
     );
     return result.rows[0];
 };
