@@ -67,7 +67,7 @@ export const findByEmail = async (email) => {
         `
         SELECT *
         FROM accounts
-        WHERE email = $1
+        WHERE LOWER(email) = LOWER($1)
         `,
         [email]
     );
