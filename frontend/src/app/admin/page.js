@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
-import api from '../../lib/api';
-import Input from '../../components/Input';
-import Button from '../../components/Button';
+import { useAuth } from '../contexts/AuthContext';
+import api from '../lib/api';
+import Input from '../components/Input';
+import Button from '../components/Button';
 import toast from 'react-hot-toast';
 
 export default function AdminPanel() {
