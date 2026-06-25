@@ -51,9 +51,9 @@ export class GithubStorageProvider extends StorageProvider {
         const responseData = await response.json();
         const sha = responseData.content?.sha;
 
-        // Return the jsDelivr URL for fast CDN delivery
-        // Format: https://cdn.jsdelivr.net/gh/user/repo@branch/file
-        const resultUrl = `https://cdn.jsdelivr.net/gh/${this.repo}@${this.branch}/${uploadPath}`;
+        // Return the raw GitHub URL to avoid CDN caching delays for immediately uploaded images
+        // Format: https://raw.githubusercontent.com/user/repo/branch/file
+        const resultUrl = `https://raw.githubusercontent.com/${this.repo}/${this.branch}/${uploadPath}`;
         
         return {
             url: resultUrl,
