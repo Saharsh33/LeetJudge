@@ -27,9 +27,10 @@ CREATE TABLE IF NOT EXISTS accounts (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255),
-    google_id VARCHAR(255) UNIQUE,
     role role_enum DEFAULT 'USER'
 );
+
+ALTER TABLE accounts ADD COLUMN IF NOT EXISTS google_id VARCHAR(255) UNIQUE;
 
 -- Problem Table
 CREATE TABLE IF NOT EXISTS problems (
