@@ -39,7 +39,7 @@ describe('Problem Endpoints', () => {
             .send({
                 title: 'Two Sum Test',
                 description: 'Given an array of integers and a target...',
-                tags: ['Array', 'Hash Table'],
+                tags: ['Arrays', 'Trees'],
                 difficulty: 'EASY',
                 timelimit: 1000,
                 memorylimit: 262144
@@ -50,10 +50,33 @@ describe('Problem Endpoints', () => {
         problemId = res.body.problem.id;
     });
 
+    it('should reject invalid tags', async () => {
+        const res = await request(app)
+            .post('/api/problems')
+            .set('Authorization', `Bearer ${adminToken}`)
+            .send({
+                title: 'Invalid Tags Test',
+                description: 'Test problem',
+                tags: ['Hash Table'],
+                difficulty: 'EASY',
+                timelimit: 1000,
+                memorylimit: 262144
+            });
+
+        expect(res.statusCode).toEqual(400);
+        expect(res.body.error).toMatch(/Invalid tag/);
+    });
+
     it('should get a list of problems', async () => {
         const res = await request(app).get('/api/problems');
         expect(res.statusCode).toEqual(200);
         expect(Array.isArray(res.body.problems)).toBeTruthy();
+    });
+
+    it('should return allowed problem tags', async () => {
+        const res = await request(app).get('/api/problems/tags');
+        expect(res.statusCode).toEqual(200);
+        expect(res.body.tags).toEqual(['Arrays', 'Trees', 'Graphs', 'Dynamic Programming']);
     });
 
     it('should add test cases to the created problem', async () => {

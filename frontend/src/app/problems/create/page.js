@@ -8,9 +8,12 @@ import Input from '../../components/Input';
 import Button from '../../components/Button';
 import MarkdownEditor from '../../components/MarkdownEditor';
 import ProblemGuidelines from '../../components/ProblemGuidelines';
+import TagSelector from '../../components/TagSelector';
+import { useProblemTags } from '../../contexts/ProblemTagsContext';
 
 export default function CreateProblem() {
   const { user, loading: authLoading } = useAuth();
+  const { tags: allowedTags, loading: tagsLoading } = useProblemTags();
   const router = useRouter();
 
   const [title, setTitle] = useState('');
@@ -18,7 +21,7 @@ export default function CreateProblem() {
   const [difficulty, setDifficulty] = useState('EASY');
   const [timelimit, setTimelimit] = useState(1000);
   const [memorylimit, setMemorylimit] = useState(262144);
-  const [tags, setTags] = useState('');
+  const [tags, setTags] = useState([]);
   const [testCases, setTestCases] = useState([{ input: '', output: '' }]);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -26,6 +29,7 @@ export default function CreateProblem() {
   const DRAFT_KEY = 'leetjudge_create_problem_draft';
 
   useEffect(() => {
+    if (tagsLoading) return;
     const saved = localStorage.getItem(DRAFT_KEY);
     if (saved) {
       try {
@@ -35,13 +39,19 @@ export default function CreateProblem() {
         if (parsed.difficulty) setDifficulty(parsed.difficulty);
         if (parsed.timelimit) setTimelimit(parsed.timelimit);
         if (parsed.memorylimit) setMemorylimit(parsed.memorylimit);
-        if (parsed.tags) setTags(parsed.tags);
+        if (parsed.tags) {
+          if (Array.isArray(parsed.tags)) {
+            setTags(parsed.tags.filter((t) => allowedTags.includes(t)));
+          } else if (typeof parsed.tags === 'string') {
+            setTags(parsed.tags.split(',').map((t) => t.trim()).filter((t) => allowedTags.includes(t)));
+          }
+        }
         if (parsed.testCases) setTestCases(parsed.testCases);
       } catch (e) {
         console.error("Failed to load draft", e);
       }
     }
-  }, []);
+  }, [tagsLoading, allowedTags]);
 
   useEffect(() => {
     const draft = { title, description, difficulty, timelimit, memorylimit, tags, testCases };
@@ -87,7 +97,7 @@ export default function CreateProblem() {
         difficulty,
         timelimit: Number(timelimit),
         memorylimit: Number(memorylimit),
-        tags: tags.split(',').map(t => t.trim()).filter(Boolean),
+        tags,
       });
 
       const problem = problemRes.data.problem;
@@ -181,7 +191,7 @@ export default function CreateProblem() {
           </div>
         </div>
 
-        <Input label="Tags (comma-separated)" id="tags" type="text" value={tags} onChange={(e) => setTags(e.target.value)} placeholder="arrays, hash-map, two-pointers" />
+        <TagSelector selectedTags={tags} onChange={setTags} />
 
         {/* Test Cases */}
         <div style={{ marginBottom: '1.5rem' }}>

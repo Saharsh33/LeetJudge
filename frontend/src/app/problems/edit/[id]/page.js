@@ -8,11 +8,14 @@ import Input from '../../../components/Input';
 import Button from '../../../components/Button';
 import MarkdownEditor from '../../../components/MarkdownEditor';
 import ProblemGuidelines from '../../../components/ProblemGuidelines';
+import TagSelector from '../../../components/TagSelector';
+import { useProblemTags } from '../../../contexts/ProblemTagsContext';
 import { toast } from 'react-hot-toast';
 
 export default function EditProblem({ params }) {
   const { id } = use(params);
   const { user, loading: authLoading } = useAuth();
+  const { tags: allowedTags, loading: tagsLoading } = useProblemTags();
   const router = useRouter();
 
   const [loading, setLoading] = useState(true);
@@ -21,7 +24,7 @@ export default function EditProblem({ params }) {
   const [difficulty, setDifficulty] = useState('EASY');
   const [timelimit, setTimelimit] = useState(1000);
   const [memorylimit, setMemorylimit] = useState(262144);
-  const [tags, setTags] = useState('');
+  const [tags, setTags] = useState([]);
   
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -29,6 +32,7 @@ export default function EditProblem({ params }) {
   const [addingEditor, setAddingEditor] = useState(false);
 
   useEffect(() => {
+    if (tagsLoading) return;
     const fetchProblem = async () => {
       try {
         const response = await api.get(`/problems/${id}`);
@@ -38,7 +42,7 @@ export default function EditProblem({ params }) {
         setDifficulty(p.difficulty);
         setTimelimit(p.timelimit);
         setMemorylimit(p.memorylimit);
-        setTags(p.tags ? p.tags.join(', ') : '');
+        setTags(p.tags ? p.tags.filter((t) => allowedTags.includes(t)) : []);
       } catch (err) {
         setError('Failed to fetch problem data');
       } finally {
@@ -46,7 +50,7 @@ export default function EditProblem({ params }) {
       }
     };
     fetchProblem();
-  }, [id]);
+  }, [id, tagsLoading, allowedTags]);
 
   if (authLoading || loading) {
     return <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>Loading...</div>;
@@ -73,7 +77,7 @@ export default function EditProblem({ params }) {
         difficulty,
         timelimit: Number(timelimit),
         memorylimit: Number(memorylimit),
-        tags: tags.split(',').map(t => t.trim()).filter(Boolean),
+        tags,
       });
 
       router.push(`/problems/${id}`);
@@ -170,7 +174,7 @@ export default function EditProblem({ params }) {
           </div>
         </div>
 
-        <Input label="Tags (comma-separated)" id="tags" type="text" value={tags} onChange={(e) => setTags(e.target.value)} />
+        <TagSelector selectedTags={tags} onChange={setTags} />
 
         <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '2rem', marginBottom: '2rem' }}>
           <Button type="submit" variant="primary" style={{ flex: 1 }} disabled={submitting}>

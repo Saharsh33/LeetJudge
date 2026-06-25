@@ -2,6 +2,7 @@ import * as problemService from '../services/problem.service.js';
 import { uploadImageService, deleteImageService } from '../services/storage.service.js';
 import { clearCache } from '../middleware/cache.middleware.js';
 import { findByEmail } from '../repositories/account.repository.js';
+import { getAllTags } from '../models/tag.js';
 
 export const getProblems = async (req, res) => {
     try {
@@ -11,6 +12,10 @@ export const getProblems = async (req, res) => {
         console.error(error);
         res.status(500).json({ error: "An internal server error occurred" });
     }
+};
+
+export const getTags = async (req, res) => {
+    res.status(200).json({ tags: getAllTags() });
 };
 
 export const createProblem = async (req, res) => {

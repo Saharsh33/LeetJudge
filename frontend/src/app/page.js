@@ -8,9 +8,11 @@ import { useAuth } from './contexts/AuthContext';
 import Link from 'next/link';
 import Badge from './components/Badge';
 import DifficultyBadge from './components/DifficultyBadge';
+import ProblemTagFilter from './components/ProblemTagFilter';
 
 export default function Home() {
   const [problems, setProblems] = useState([]);
+  const [selectedFilters, setSelectedFilters] = useState([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const { user } = useAuth();
@@ -55,6 +57,12 @@ export default function Home() {
     { header: 'Memory Limit', accessor: 'memorylimit', render: (row) => `${Math.round(row.memorylimit / 1024)} MB` },
   ];
 
+  const filteredProblems = selectedFilters.length === 0
+    ? problems
+    : problems.filter((problem) =>
+        problem.tags?.some((tag) => selectedFilters.includes(tag))
+      );
+
   if (loading) {
     return <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>Loading problems...</div>;
   }
@@ -62,7 +70,10 @@ export default function Home() {
   return (
     <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-        <h1 style={{ fontSize: '1.5rem', marginBottom: '0' }}>Problem Set</h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <h1 style={{ fontSize: '1.5rem', marginBottom: '0' }}>Problem Set</h1>
+          <ProblemTagFilter selectedTags={selectedFilters} onChange={setSelectedFilters} />
+        </div>
         {user && (user.role === 'ADMIN' || user.role === 'PROBLEM_SETTER') && (
           <Link href="/problems/create" style={{
             backgroundColor: 'var(--primary)',
@@ -80,10 +91,30 @@ export default function Home() {
         <div style={{ textAlign: 'center', padding: '3rem', border: '1px solid var(--border-color)', borderRadius: 'var(--radius)', color: 'var(--text-secondary)' }}>
           No problems available yet.
         </div>
+      ) : filteredProblems.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '3rem', border: '1px solid var(--border-color)', borderRadius: 'var(--radius)', color: 'var(--text-secondary)' }}>
+          No problems match the selected filters.
+          <button
+            type="button"
+            onClick={() => setSelectedFilters([])}
+            style={{
+              display: 'block',
+              margin: '0.75rem auto 0',
+              color: 'var(--primary)',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '0.875rem',
+              fontWeight: '500',
+            }}
+          >
+            Clear filters
+          </button>
+        </div>
       ) : (
         <Table 
           columns={columns} 
-          data={problems} 
+          data={filteredProblems} 
           onRowClick={(row) => router.push(`/problems/${row.id}`)} 
         />
       )}
