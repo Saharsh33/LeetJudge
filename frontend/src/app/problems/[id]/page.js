@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import api from '../../lib/api';
 import MarkdownRenderer from '../../components/MarkdownRenderer';
 import CodeEditor from '../../components/CodeEditor';
@@ -37,6 +38,7 @@ export default function ProblemWorkspace() {
   const [pollInterval, setPollInterval] = useState(null);
   const [shortcut, setShortcut] = useState('Ctrl Enter');
   const { user } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     if (typeof navigator !== 'undefined') {
@@ -117,6 +119,18 @@ export default function ProblemWorkspace() {
     }
   };
 
+  const handleDelete = async () => {
+    if (!confirm('Are you sure you want to delete this problem?')) return;
+    try {
+      await api.delete(`/problems/${id}`);
+      toast.success('Problem deleted successfully');
+      router.push('/');
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response?.data?.error || 'Failed to delete problem');
+    }
+  };
+
   const getVerdictStyle = (verdict) => {
     switch (verdict) {
       case 'ACCEPTED': return { color: 'var(--status-accepted)', backgroundColor: 'var(--status-accepted-bg)', padding: '0.2rem 0.6rem', borderRadius: 'var(--radius)', fontWeight: '600', fontSize: '0.875rem' };
@@ -139,7 +153,18 @@ export default function ProblemWorkspace() {
     <div style={{ display: 'flex', height: 'calc(100vh - 60px)' }}>
       {/* Left Pane - Description */}
       <div style={{ flex: 1, padding: '1.5rem', overflowY: 'auto', borderRight: '1px solid var(--border-color)' }}>
-        <h1 style={{ fontSize: '1.875rem', fontWeight: '700', letterSpacing: '-0.02em', marginBottom: '0.75rem', color: 'var(--text-main)' }}>{problem.title}</h1>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
+          <h1 style={{ fontSize: '1.875rem', fontWeight: '700', letterSpacing: '-0.02em', color: 'var(--text-main)', margin: 0 }}>{problem.title}</h1>
+          
+          {(user?.role === 'ADMIN' || (user?.role === 'PROBLEM_SETTER' && user?.id === problem?.created_by)) && (
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <Link href={`/problems/edit/${problem.id}`}>
+                <Button variant="secondary" style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem' }}>Edit</Button>
+              </Link>
+              <Button variant="danger" onClick={handleDelete} style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem', backgroundColor: '#fee2e2', color: '#b91c1c', border: '1px solid #fca5a5' }}>Delete</Button>
+            </div>
+          )}
+        </div>
         <div style={{ marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
             <DifficultyBadge difficulty={problem.difficulty} />
