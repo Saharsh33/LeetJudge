@@ -35,3 +35,19 @@ export const getProblemByIdService = async (problemId) => {
 
     return problem;
 };
+
+export const updateProblemService = async (problemId, problemData) => {
+    return problemRepo.update(problemId, problemData);
+};
+
+export const deleteProblemService = async (problemId) => {
+    return problemRepo.deleteProblem(problemId);
+};
+
+export const addProblemEditorService = async (problemId, userId) => {
+    return problemRepo.addEditor(problemId, userId);
+};
+
+export const getProblemEditorsService = async (problemId) => {
+    return problemRepo.getEditors(problemId);
+};
