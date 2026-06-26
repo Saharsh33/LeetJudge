@@ -64,31 +64,9 @@ export const findById = async (problemId) => {
     return result.rows[0];
 };
 
-export const findAll = async (limit, offset, userId = null, userRole = 'USER') => {
-    // If user is Admin, they can see everything.
-    // If user is problem setter, they can see their own hidden problems.
-    // Otherwise, normal users can only see hidden problems if they are in an active or past contest.
-    
-    let visibilityCondition = `
-        p.is_hidden = false 
-        OR p.id IN (
-            SELECT cp.problem_id 
-            FROM contest_problems cp 
-            JOIN contests c ON cp.contest_id = c.id 
-            WHERE c.start_time <= NOW()
-        )
-    `;
-
-    if (userRole === 'ADMIN') {
-        visibilityCondition = `TRUE`;
-    } else if (userId) {
-        visibilityCondition = `(${visibilityCondition}) OR p.created_by = $3`;
-    }
-
-    const queryArgs = [limit, offset];
-    if (userRole !== 'ADMIN' && userId) {
-        queryArgs.push(userId);
-    }
+export const findAll = async (limit, offset) => {
+    const countResult = await query('SELECT COUNT(*) FROM problems');
+    const total = parseInt(countResult.rows[0].count, 10);
 
     const result = await query(
         `
@@ -116,7 +94,7 @@ export const findAll = async (limit, offset, userId = null, userRole = 'USER') =
         queryArgs
     );
 
-    return result.rows;
+    return { problems: result.rows, total };
 };
 
 export const update = async (problemId, { title, description, tags, difficulty, timelimit, memorylimit, editorial, isEditorialVisible, isHidden }) => {
