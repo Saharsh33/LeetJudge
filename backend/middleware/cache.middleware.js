@@ -49,3 +49,22 @@ export const clearCache = async (key) => {
         logger.error('Cache', 'Redis del error', error);
     }
 };
+
+export const getCacheValue = async (key) => {
+    try {
+        const cached = await redisConnection.get(key);
+        return cached ? JSON.parse(cached) : null;
+    } catch (error) {
+        logger.error('Cache', 'Redis get error', error);
+        return null;
+    }
+};
+
+export const setCacheValue = async (key, body, durationInSeconds) => {
+    try {
+        await redisConnection.setex(key, durationInSeconds, JSON.stringify(body));
+        logger.debug('Cache', `Cached ${key} for ${durationInSeconds}s`);
+    } catch (error) {
+        logger.error('Cache', 'Redis set error', error);
+    }
+};

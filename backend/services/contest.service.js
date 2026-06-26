@@ -1,5 +1,6 @@
 import * as contestdb from '../repositories/contest.repository.js';
 import { createSubmissionService } from './submission.service.js';
+import { clearContestCache } from './contestCache.service.js';
 
 export const createContestService = async (contestData) => {
     if (!contestData.name || contestData.name.trim().length === 0) {
@@ -305,6 +306,8 @@ async (
         contestId,
         problems
     );
+
+    await clearContestCache(contestId);
 
     return {
         message:

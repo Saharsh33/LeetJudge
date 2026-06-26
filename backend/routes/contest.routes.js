@@ -1,5 +1,6 @@
 import express from 'express';
 import { authenticate, optionalAuthenticate, requireRole } from '../middleware/auth.middleware.js';
+import { cacheContestProblemsIfLive } from '../middleware/contestCache.middleware.js';
 
 import {
     createContest,
@@ -78,6 +79,7 @@ router.get(
 router.get(
     '/:contestId/problems',
     optionalAuthenticate,
+    cacheContestProblemsIfLive,
     getContestProblems
 );
 

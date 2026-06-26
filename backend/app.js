@@ -56,12 +56,14 @@ app.get('/health', (req, res) => {
 // Start the background worker within the same process
 // This saves you from needing to deploy a separate Background Worker service on Render!
 import './worker.js';
+import { startContestCacheWarmup } from './jobs/contestCache.warmup.js';
 
 // Bootstrap application
 const isMain = process.argv[1] === fileURLToPath(import.meta.url);
 if (isMain) {
     app.listen(PORT, () => {
         logger.info('App', `Server is running on port ${PORT}`);
+        startContestCacheWarmup();
     });
 }
 
