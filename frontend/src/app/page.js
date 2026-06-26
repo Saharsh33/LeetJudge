@@ -13,6 +13,7 @@ import ClickableProblemTag from './components/ClickableProblemTag';
 function HomeContent() {
   const [problems, setProblems] = useState([]);
   const [selectedFilters, setSelectedFilters] = useState([]);
+  const [selectedDifficulty, setSelectedDifficulty] = useState('');
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
@@ -25,6 +26,7 @@ function HomeContent() {
   useEffect(() => {
     const tagParam = searchParams.get('tag');
     const tagsParam = searchParams.get('tags');
+    const diffParam = searchParams.get('difficulty');
     const pageParam = parseInt(searchParams.get('page')) || 1;
     let next = [];
     if (tagsParam) {
@@ -33,8 +35,10 @@ function HomeContent() {
       next = [decodeURIComponent(tagParam)];
     }
     setSelectedFilters(next);
+    setSelectedDifficulty(diffParam || '');
     setPage(pageParam);
     sessionStorage.setItem('leetjudge_tag_filters', JSON.stringify(next));
+    sessionStorage.setItem('leetjudge_difficulty_filter', diffParam || '');
   }, [searchParams]);
 
   useEffect(() => {
@@ -58,8 +62,9 @@ function HomeContent() {
     fetchProblems();
   }, [page]);
 
-  const syncFiltersToUrl = (tags, newPage = page) => {
+  const syncFiltersToUrl = (tags, difficulty, newPage = page) => {
     sessionStorage.setItem('leetjudge_tag_filters', JSON.stringify(tags));
+    sessionStorage.setItem('leetjudge_difficulty_filter', difficulty);
     const params = new URLSearchParams(searchParams);
     if (tags.length === 0) {
       params.delete('tag');
@@ -70,6 +75,11 @@ function HomeContent() {
     } else {
       params.delete('tag');
       params.set('tags', tags.join(','));
+    }
+    if (difficulty) {
+      params.set('difficulty', difficulty);
+    } else {
+      params.delete('difficulty');
     }
     if (newPage > 1) {
       params.set('page', newPage.toString());
@@ -84,12 +94,18 @@ function HomeContent() {
       ? selectedFilters.filter((t) => t !== tag)
       : [...selectedFilters, tag];
     setSelectedFilters(next);
-    syncFiltersToUrl(next);
+    syncFiltersToUrl(next, selectedDifficulty);
   };
 
   const handleFilterChange = (tags) => {
     setSelectedFilters(tags);
-    syncFiltersToUrl(tags);
+    syncFiltersToUrl(tags, selectedDifficulty);
+  };
+
+  const handleDifficultyChange = (e) => {
+    const diff = e.target.value;
+    setSelectedDifficulty(diff);
+    syncFiltersToUrl(selectedFilters, diff);
   };
 
   const columns = [
@@ -121,11 +137,11 @@ function HomeContent() {
     { header: 'Memory Limit', accessor: 'memorylimit', render: (row) => `${Math.round(row.memorylimit / 1024)} MB` },
   ];
 
-  const filteredProblems = selectedFilters.length === 0
-    ? problems
-    : problems.filter((problem) =>
-        problem.tags?.some((tag) => selectedFilters.includes(tag))
-      );
+  const filteredProblems = problems.filter((problem) => {
+    const tagMatch = selectedFilters.length === 0 || problem.tags?.some((tag) => selectedFilters.includes(tag));
+    const difficultyMatch = !selectedDifficulty || problem.difficulty === selectedDifficulty;
+    return tagMatch && difficultyMatch;
+  });
 
   if (loading) {
     return <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>Loading problems...</div>;
@@ -137,6 +153,27 @@ function HomeContent() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <h1 style={{ fontSize: '1.5rem', marginBottom: '0' }}>Problem Set</h1>
           <ProblemTagFilter selectedTags={selectedFilters} onChange={handleFilterChange} />
+          <select 
+            value={selectedDifficulty} 
+            onChange={handleDifficultyChange}
+            style={{
+              padding: '0.5rem 0.875rem',
+              borderRadius: 'var(--radius)',
+              border: `1px solid ${selectedDifficulty ? 'var(--primary)' : 'var(--border-color)'}`,
+              backgroundColor: selectedDifficulty ? 'rgba(0, 122, 255, 0.05)' : 'var(--surface)',
+              color: selectedDifficulty ? 'var(--primary)' : 'var(--text-main)',
+              fontSize: '0.875rem',
+              fontWeight: '500',
+              cursor: 'pointer',
+              outline: 'none',
+              appearance: 'none',
+            }}
+          >
+            <option value="">All Difficulties</option>
+            <option value="EASY">Easy</option>
+            <option value="MEDIUM">Medium</option>
+            <option value="HARD">Hard</option>
+          </select>
         </div>
         {user && (user.role === 'ADMIN' || user.role === 'PROBLEM_SETTER') && (
           <Link href="/problems/create" style={{
@@ -160,7 +197,10 @@ function HomeContent() {
           No problems match the selected filters.
           <button
             type="button"
-            onClick={() => handleFilterChange([])}
+            onClick={() => {
+              handleFilterChange([]);
+              handleDifficultyChange({ target: { value: '' } });
+            }}
             style={{
               display: 'block',
               margin: '0.75rem auto 0',
@@ -187,7 +227,7 @@ function HomeContent() {
               onClick={() => {
                 const nextP = Math.max(1, page - 1);
                 setPage(nextP);
-                syncFiltersToUrl(selectedFilters, nextP);
+                syncFiltersToUrl(selectedFilters, selectedDifficulty, nextP);
               }}
               disabled={page === 1}
               style={{
@@ -206,7 +246,7 @@ function HomeContent() {
               onClick={() => {
                 const nextP = page + 1;
                 setPage(nextP);
-                syncFiltersToUrl(selectedFilters, nextP);
+                syncFiltersToUrl(selectedFilters, selectedDifficulty, nextP);
               }}
               disabled={!hasMore}
               style={{
