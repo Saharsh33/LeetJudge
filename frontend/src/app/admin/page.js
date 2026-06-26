@@ -56,6 +56,11 @@ export default function AdminPanel() {
     <div style={{ padding: '2rem', maxWidth: '1000px', margin: '0 auto' }}>
       <h1 style={{ fontSize: '1.5rem', marginBottom: '1.5rem' }}>Admin Dashboard</h1>
       
+      <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
+        <Button onClick={() => router.push('/admin/contests')} variant="primary">
+          Manage Contests
+        </Button>
+      </div>
       <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', borderBottom: '1px solid var(--border-color)' }}>
         <button
           onClick={() => setActiveTab('analytics')}
