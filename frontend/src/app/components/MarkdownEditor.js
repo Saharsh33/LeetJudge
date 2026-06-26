@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import MarkdownRenderer from './MarkdownRenderer';
 import api from '../lib/api';
 import toast from 'react-hot-toast';
+import { resolveImageUrl } from '../lib/imageUrl';
 
 export default function MarkdownEditor({ value, onChange, placeholder = "Write your markdown here...", storageKey }) {
   const [activeTab, setActiveTab] = useState('split'); // 'write', 'preview', 'split'
@@ -246,10 +247,8 @@ export default function MarkdownEditor({ value, onChange, placeholder = "Write y
           <h4 style={{ margin: '0 0 1rem 0', fontSize: '1rem' }}>Session Uploads</h4>
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
             {uploadedImages.map((img, idx) => {
-                const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
-                const baseUrl = apiUrl.replace(/\/api$/, '');
-                const finalSrc = img.url?.startsWith('/uploads') ? `${baseUrl}${img.url}` : img.url;
-                
+                const finalSrc = resolveImageUrl(img.url);
+
                 return (
               <div key={idx} style={{
                 position: 'relative',

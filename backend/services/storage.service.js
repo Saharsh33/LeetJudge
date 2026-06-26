@@ -43,3 +43,15 @@ export const deleteImageService = async (fileId) => {
     if (!fileId) return;
     return storageProvider.deleteFile(fileId);
 };
+
+export const getImageFileService = async (imagePath) => {
+    if (!imagePath || imagePath.includes('..')) {
+        throw new Error('Invalid image path');
+    }
+
+    if (!(storageProvider instanceof GithubStorageProvider)) {
+        throw new Error('Image proxy is only available when GitHub storage is enabled');
+    }
+
+    return storageProvider.getFile(imagePath);
+};

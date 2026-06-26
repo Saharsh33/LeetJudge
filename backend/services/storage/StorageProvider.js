@@ -16,4 +16,12 @@ export class StorageProvider {
     async deleteFile(fileId) {
         throw new Error("Method 'deleteFile()' must be implemented.");
     }
+
+    /**
+     * @param {string} filePath
+     * @returns {Promise<{ buffer: Buffer, contentType: string }>}
+     */
+    async getFile(filePath) {
+        throw new Error("Method 'getFile()' must be implemented.");
+    }
 }

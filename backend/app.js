@@ -12,6 +12,7 @@ import submissionRoutes from './routes/submission.routes.js';
 import otpRoutes from './routes/otp.routes.js';
 import adminRoutes from './routes/admin.routes.js';
 import contestRoutes from './routes/contest.routes.js';
+import imageRoutes from './routes/image.routes.js';
 import { apiLimiter } from './middleware/rateLimit.middleware.js';
 const app = express();
 app.set('trust proxy', 1); // Extract IP from X-Forwarded-For to prevent blocking all docker traffic as one IP
@@ -40,6 +41,7 @@ app.use((req, res, next) => {
 // Routes
 // Apply global rate limiting to all API routes
 app.use('/api', apiLimiter);
+app.use('/api/images', imageRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/problems', problemRoutes);
 app.use('/api/contests', contestRoutes);

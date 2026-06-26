@@ -2,6 +2,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import remarkGfm from 'remark-gfm';
 import rehypeKatex from 'rehype-katex';
+import { resolveImageUrl } from '../lib/imageUrl';
 
 export default function MarkdownRenderer({ content }) {
   return (
@@ -11,9 +12,7 @@ export default function MarkdownRenderer({ content }) {
         rehypePlugins={[rehypeKatex]}
         components={{
           img: ({node, src, ...props}) => {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
-            const baseUrl = apiUrl.replace(/\/api$/, '');
-            const finalSrc = src?.startsWith('/uploads') ? `${baseUrl}${src}` : src;
+            const finalSrc = resolveImageUrl(src);
             return <img src={finalSrc} style={{ maxWidth: '100%', height: 'auto', borderRadius: '4px' }} {...props} />;
           },
           table: ({node, ...props}) => (
