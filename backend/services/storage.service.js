@@ -5,14 +5,18 @@ import { GithubStorageProvider } from './storage/GithubStorageProvider.js';
 let storageProvider;
 
 // Factory to initialize the correct storage provider
-if (process.env.STORAGE_PROVIDER === 'github') {
+const providerStr = (process.env.STORAGE_PROVIDER || '').toLowerCase().trim();
+
+if (providerStr === 'github') {
     if (!process.env.GITHUB_TOKEN || !process.env.GITHUB_REPO) {
-        console.warn("WARNING: GitHub credentials not fully provided, falling back to LocalStorageProvider");
+        console.warn("[Storage] WARNING: GitHub credentials not fully provided. Falling back to LocalStorageProvider.");
         storageProvider = new LocalStorageProvider();
     } else {
+        console.log("[Storage] Initialized GithubStorageProvider successfully.");
         storageProvider = new GithubStorageProvider();
     }
 } else {
+    console.log(`[Storage] Initialized LocalStorageProvider (STORAGE_PROVIDER='${process.env.STORAGE_PROVIDER}')`);
     storageProvider = new LocalStorageProvider();
 }
 
